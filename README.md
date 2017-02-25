@@ -1,5 +1,9 @@
 # K-Cli
 
+# Install
+
+npm install -g k-cli
+
 # API
 
 ```shell
