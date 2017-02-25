@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+var yargs = require('yargs'),
+    args, //获取输入的参数
+    path = require('path'),
+    Pretreatment = require('../Src/Pretreatment'),
+    fs = require('fs'),
+    template_path = path.join(__dirname, '../Template'),
+    dir_array, args_type
+    ;
+
+
+dir_array = fs.readdirSync( template_path ).filter(function(element){
+    if( fs.lstatSync( path.join( template_path, element ) ).isDirectory() ) return true;
+})
+
+args = yargs
+        .usage('Usage $0 -t {type} -out [path] ')//语法介绍
+        .option('type',{ //对每个参数进行说明
+            alias: 't', //简写
+            describe: 'select type for ' + dir_array.join('|')//说明
+        })
+        .option('out',{
+            alias: 'o',
+            describe: 'copy to the path, default is "./" '
+        })
+        .demandOption(['type'],'Please select type by copy project ')//必选的参数,如果没满足的说明
+        .help()//自带help命令
+        .locale('en')//自定说明文案的语言
+        .argv;//获取参数
+console.log(args);
+
+args_type = args.t || args.type;
+
+if ( !args_type || dir_array.indexOf(args_type) === -1 ) {
+    console.error('--type options is '+ dir_array.join('|') );
+    //throw new Error('need --type params');
+}
+
+var pretreatment = new Pretreatment();
+
+pretreatment.copy(path.join(template_path, args_type))
+
